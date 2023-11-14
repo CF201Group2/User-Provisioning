@@ -1,3 +1,9 @@
+# Script Name:              Account-creator-automated
+# Author:                   juan maldonado
+# Date of latest revision:  11/14/2023
+# Purpose:                  Endpoint configuration
+
+
 # This sets up variables
 $UserName = Read-Host "Enter new username"
 $Password = Read-Host -Prompt "Enter the password for $UserName" -AsSecureString
