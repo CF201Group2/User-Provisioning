@@ -19,7 +19,7 @@ Invoke-Command -ComputerName $ComputerName -ScriptBlock {
     Start-Process -Wait -FilePath $using:SetupPath -ArgumentList "/quiet /noreboot"
 }
 
-# This set up user account
+# This sets up user account
 New-LocalUser -Name $UserName -Password $Password -FullName $FullName -Description $Description
 Add-LocalGroupMember -Group "Administrators" -Member $UserName
 
@@ -28,7 +28,7 @@ Add-LocalGroupMember -Group "Administrators" -Member $UserName
 $TimeZone = Read-Host "Enter the time zone (e.g., Pacific Standard Time)"
 Set-TimeZone -Id $TimeZone
 
-# Thos Runs Windows Update
+# This Runs Windows Update
 Install-WindowsUpdate -AcceptAll -AutoReboot
 
 # This installs google chrome
@@ -52,6 +52,15 @@ Start-Process -Wait -FilePath "C:\Users\juan9\OneDrive\Desktop\Programs-to-insta
 # This configures security settings
 # Enable Windows Defender
 Set-MpPreference -DisableRealtimeMonitoring $false
+
+ # This Enables File and Printer Sharing 
+Enable-NetFirewallRule -Name "FPS-SMB-In-TCP"
+
+# This allow ICMP traffic 
+Enable-NetFirewallRule -Name "FPS-ICMP4-ERQ-In"
+
+# This enables Remote Managment with PowerShell Remoting
+Enable-PSRemoting -Force
 
 # This sets up file and folder permissions
 # Example: Grant permissions to a folder
