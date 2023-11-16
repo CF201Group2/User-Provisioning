@@ -3,6 +3,8 @@
 # Date of latest revision:  11/15/2023
 # Purpose:                  Endpoint configuration
 
+# This changes the execution policy for the current session
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 # This sets up variables
 $UserName = Read-Host "Enter new username"
 $Password = Read-Host -Prompt "Enter the password for $UserName" -AsSecureString
