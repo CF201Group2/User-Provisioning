@@ -1,6 +1,6 @@
-# Script Name:              MSP-Test-file.ps1
+# Script Name:              Account-creator-automated.ps1
 # Author:                   juan maldonado
-# Date of latest revision:  11/14/2023
+# Date of latest revision:  11/15/2023
 # Purpose:                  Endpoint configuration
 
 # This sets up variables
@@ -9,14 +9,7 @@ $Password = Read-Host -Prompt "Enter the password for $UserName" -AsSecureString
 $FullName = Read-Host "Enter the full name for $UserName"
 $Description = Read-Host "Enter a description for $UserName"
 $ComputerName = Read-Host "Enter a ComputerName"
-$ISOPath = "C:\Users\Admin01\Desktop\Windows-ISO\Windows-ISO\Windows10.iso" # this is for the source computer, find the path to the windows 10 iso.
 
-# This installs Windows 10
-# Note: Replace \\Server\Share with the actual network path to your Windows 10 installation files
-# $SetupPath = "C:\Users\Admin01\Desktop\Windows-ISO"
-# Invoke-Command -ComputerName $ComputerName -ScriptBlock {
-   # Start-Process -Wait -FilePath $using:SetupPath -ArgumentList "/quiet /noreboot"
-#}
 
 # This sets up user account
 New-LocalUser -Name $UserName -Password $Password -FullName $FullName -Description $Description
@@ -34,27 +27,20 @@ Enable-NetFirewallRule -Name "FPS-SMB-In-TCP"
 Enable-NetFirewallRule -Name "FPS-ICMP4-ERQ-In"
 
 
-# This Runs Windows Update
-$updates = Get-WindowsUpdate -Online
-if ($updates.Count -gt 0) {
-    # this installs updates
-    Install-WindowsUpdate -Updates $updates -AcceptAll -AutoReboot
-}
-
 # This installs google chrome
-Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Programs-to-install\ChromeSetup.exe"
+Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\ChromeSetup.exe"
 
 # This installs Thunderbird email
-Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Programs-to-install\Thunderbird Setup 115.4.2.exe"
+Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Thunderbird Setup 115.4.2.exe"
 
 # This installs Slack
-Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Programs-to-install\SlackSetup.exe"
+Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\SlackSetup.exe"
 
 # This installs VLC
-Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Programs-to-install\vlc-3.0.20-win64.exe"
+Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\vlc-3.0.20-win64.exe"
 
 # This installs Malwarebytes
-Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\Programs-to-install\MBSetup-5.5.exe"
+Start-Process -Wait -FilePath "C:\Users\Admin01\Desktop\Programs-to-install\MBSetup-5.5.exe"
 
 
 # This configures security settings
@@ -67,15 +53,22 @@ Enable-NetFirewallRule -Name "FPS-SMB-In-TCP"
 # This allow ICMP traffic 
 Enable-NetFirewallRule -Name "FPS-ICMP4-ERQ-In"
 
-
-# This creates a system backup and restore points
-# Example: Create a system restore point
-Checkpoint-Computer -Description "Before Software Installation" -RestorePointType "MODIFY_SETTINGS"
-
 # This disables SMBv1
 Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
 
+# This enables remote desktop protocol
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+
+# This allows RDP through the Windows Firewall
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+# This allows changes to apply
+Restart-Service -Name TermService -Force
+
+
+# This displays a message to the user that the user provisioning is completed
 Write-Host "Windows 10 configuration complete."
+Read-Host "Press Enter to continue and to reboor the computer..."
 
 # This will Reboot the computer
 Restart-Computer -Force
